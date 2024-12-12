@@ -1,8 +1,21 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView} from 'react-native';
+import { 
+    View, 
+    Text, 
+    StyleSheet, 
+    SafeAreaView, 
+    TouchableOpacity, 
+    ScrollView, 
+    TouchableWithoutFeedback, 
+    KeyboardAvoidingView, 
+    Platform, 
+    Keyboard, 
+    FlatList
+} from 'react-native';
 import Filters from '../components/Filters';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../styles/theme';
+
 export default function FilterScreen() {
     const { filters, setFilters } = useContext(AuthContext);
 
@@ -18,24 +31,31 @@ export default function FilterScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView 
-                style={styles.content}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                <Text style={styles.header}>Set Your Filters</Text>
-                <Filters filters={filters} setFilters={setFilters} />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={styles.container}
+                >
+                    <ScrollView 
+                        style={styles.content}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        <Text style={styles.header}>Set Your Filters</Text>
+                        <Filters filters={filters} setFilters={setFilters} />
 
-                <TouchableOpacity style={styles.button} onPress={clearFilters}>
-                    <Text style={styles.buttonText}>Clear Filters</Text>
-                </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={clearFilters}>
+                            <Text style={styles.buttonText}>Clear Filters</Text>
+                        </TouchableOpacity>
 
-                <Text style={styles.note}>
-                    Adjust the filters above. You can set distance, price range, 
-                    cuisine keyword, and a minimum rating. The Home screen will 
-                    use these filters to find a random restaurant.
-                </Text>
-            </ScrollView>
+                        <Text style={styles.note}>
+                            Adjust the filters above. You can set distance, price range, 
+                            cuisine keyword, and a minimum rating. The Home screen will 
+                            use these filters to find a random restaurant.
+                        </Text>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
         </SafeAreaView>
     );
 }

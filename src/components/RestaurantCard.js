@@ -2,10 +2,10 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
-import { saveVisitedRestaurant } from '../services/restaurantService';
+import { saveVisitedRestaurant, saveBlacklistedRestaurant } from '../services/restaurantService';
 import { COLORS } from '../styles/theme';
 
-export default function RestaurantCard({ restaurant }) {
+export default function RestaurantCard({ restaurant, onBlacklist }) {
     const { user } = useContext(AuthContext);
 
     const { name, rating, vicinity, price_level } = restaurant;
@@ -35,6 +35,29 @@ export default function RestaurantCard({ restaurant }) {
         }
     };
 
+    const handleBlacklist = async () => {
+        if (!user) {
+            alert("You must be logged in to blacklist a restaurant.");
+            return;
+        }
+        try {
+            await saveBlacklistedRestaurant(user.uid, {
+                name,
+                rating: rating || 'N/A',
+                vicinity: vicinity || 'N/A',
+                price_level: price_level !== undefined ? price_level : 'N/A',
+                timestamp: new Date().toISOString()
+            });
+            alert(`${name} has been blacklisted.`);
+            if (onBlacklist) {  // Call the callback if provided
+                await onBlacklist();
+            }
+        } catch (error) {
+            console.log('Error blacklisting restaurant:', error);
+            alert('Error blacklisting restaurant.');
+        }
+    }
+
     return (
         <View style={styles.card}>
             {/* Restaurant Info */}
@@ -58,11 +81,11 @@ export default function RestaurantCard({ restaurant }) {
             {/* Button Container */}
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={onSaveToHistory}>
-                    <Text style={styles.buttonText}>Mark as Visited</Text>
+                    <Text style={styles.buttonText}>Add to Visited</Text>
                 </TouchableOpacity>
 
                 {/* TODO: Blacklist Button */}
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleBlacklist}>
                     <Text style={styles.buttonText}>Blacklist</Text>
                 </TouchableOpacity>
             </View>

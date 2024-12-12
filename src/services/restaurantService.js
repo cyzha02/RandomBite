@@ -21,3 +21,33 @@ export async function deleteVisitedRestaurant(userId, restaurantId) {
     const docRef = doc(db, 'users', userId, 'visitedRestaurants', restaurantId);
     await deleteDoc(docRef);
 }
+
+export const saveBlacklistedRestaurant = async (userId, restaurantData) => {
+    const colRef = collection(db, 'users', userId, 'blacklistedRestaurants');
+    await addDoc(colRef, restaurantData);
+}
+
+export const getBlacklistedRestaurants = async (userId) => {
+    if (!userId) {
+        console.log('No userId provided to getBlacklistedRestaurants');
+        return [];
+    }
+    
+    try {
+        const blacklistRef = collection(db, 'users', userId, 'blacklistedRestaurants');
+        const q = query(blacklistRef, orderBy('timestamp', 'desc'));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+    } catch (error) {
+        console.error('Error in getBlacklistedRestaurants:', error);
+        throw error;
+    }
+};
+
+export const deleteBlacklistedRestaurant = async (userId, restaurantId) => {
+    const docRef = doc(db, 'users', userId, 'blacklistedRestaurants', restaurantId);
+    await deleteDoc(docRef);
+}

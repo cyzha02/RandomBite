@@ -11,19 +11,22 @@ import {
     Image,
     Dimensions
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { getRestaurantsNearby } from '../api/placesApi';
 import RestaurantCard from '../components/RestaurantCard';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../styles/theme';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
+import { getBlacklistedRestaurants } from '../services/restaurantService'; 
 
 export default function HomeScreen() {
     const [location, setLocation] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [blacklistedRestaurants, setBlacklistedRestaurants] = useState([]);
+    const { user } = useContext(AuthContext);
+    const isFocused = useIsFocused();
 
     const clearRestaurant = () => {
         setRestaurant(null);
@@ -46,6 +49,21 @@ export default function HomeScreen() {
         })();
     }, []);
 
+    useEffect(() => {
+        if (user && isFocused) {
+            loadBlacklist();
+        }
+    }, [user, isFocused]);
+
+    const loadBlacklist = async () => {
+        try {
+            const blacklisted = await getBlacklistedRestaurants(user.uid);
+            setBlacklistedRestaurants(blacklisted);
+        } catch (error) {
+            console.log('Error loading blacklist:', error);
+        }
+    }
+
     const generateRestaurant = async () => {
         if (!location) {
             Alert.alert('Location Not Ready', 'Location not available yet.');
@@ -57,7 +75,10 @@ export default function HomeScreen() {
             // Apply min rating filter client-side since Places API doesn't support it directly
             const filtered = results.filter(r => {
                 const rating = r.rating || 0;
-                return rating >= filters.minRating;
+                const isBlacklisted = blacklistedRestaurants.some(
+                    blacklisted => blacklisted.name === r.name 
+                );
+                return rating >= filters.minRating && !isBlacklisted;
             });
 
             if (filtered.length > 0) {
@@ -73,6 +94,11 @@ export default function HomeScreen() {
         }
         setLoading(false);
     };
+
+    const handleBlacklist = async () => {
+        setRestaurant(null);
+        await loadBlacklist();
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -119,7 +145,10 @@ export default function HomeScreen() {
                                     color={COLORS.primary}
                                 />
                             </TouchableOpacity>
-                            <RestaurantCard restaurant={restaurant} />
+                            <RestaurantCard 
+                                restaurant={restaurant}
+                                onBlacklist={handleBlacklist} 
+                            />
                         </View>
                     )}
                 </View>
