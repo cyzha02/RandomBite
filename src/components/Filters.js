@@ -50,7 +50,7 @@ export default function Filters({ filters, setFilters }) {
                             }
                         }
                     }}
-                    placeholder="Enter distance (default: 100 miles)"
+                    placeholder="Enter distance (default & max: 31 miles)"
                     placeholderTextColor="#666"
                 />
 

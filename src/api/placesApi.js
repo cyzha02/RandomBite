@@ -4,7 +4,7 @@ const GOOGLE_PLACES_API_KEY = "AIzaSyAQPS9PZlHMf8L9iZrvw9DTMZZ9T02o8jM";
 const BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 
 export async function getRestaurantsNearby(location, filters) {
-    const DEFAULT_RADIUS_METERS = 160934;
+    const DEFAULT_RADIUS_METERS = 50000;//approx 31 miles, 50km by API limit
 
     const params = {
         key: GOOGLE_PLACES_API_KEY,
