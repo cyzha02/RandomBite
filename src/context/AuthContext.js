@@ -8,11 +8,10 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     const [filters, setFilters] = useState({
-        radius: 1500,
+        radius: null,
         openNow: false,
-        minprice: 0,
-        maxprice: 4,
-        cuisine: '',
+        selectedPrice: [],
+        selectedCuisine: [],
         minRating: 0
     });
 

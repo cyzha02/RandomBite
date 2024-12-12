@@ -8,58 +8,64 @@ import {
     Keyboard,
     TouchableWithoutFeedback,
 } from 'react-native';
+import { COLORS } from '../styles/theme';
+import CuisineSelector from './CuisineSelector';
+import PriceSelector from './PriceSelector';
+
+const milesToMeters = (miles) => miles * 1609.34;
+const metersToMiles = (meters) => meters / 1609.34;
 
 export default function Filters({ filters, setFilters }) {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
-                <Text style={styles.label}>Distance (meters):</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType="numeric"
-                    value={String(filters.radius)}
-                    onChangeText={(val) => setFilters({ ...filters, radius: parseInt(val) || 1500 })}
-                />
 
                 <View style={styles.row}>
-                    <Text>Open Now Only:</Text>
+                    <Text style={styles.label}>Open Now Only:</Text>
                     <Switch
                         value={filters.openNow || false}
                         onValueChange={(val) => setFilters({ ...filters, openNow: val })}
                     />
                 </View>
 
-                <Text style={styles.label}>Min Price Level (0-4):</Text>
+                <Text style={styles.label}>Distance (miles):</Text>
                 <TextInput
                     style={styles.input}
                     keyboardType="numeric"
-                    value={String(filters.minprice)}
+                    value={filters.radius === null ? '' : String(metersToMiles(filters.radius))}
                     onChangeText={(val) => {
-                    let mp = parseInt(val);
-                    if (isNaN(mp) || mp < 0) mp = 0;
-                    if (mp > filters.maxprice) mp = filters.maxprice;
-                    setFilters({ ...filters, minprice: mp });
+                        if (val === '') {
+                            // allow empty val 
+                            setFilters({
+                                ...filters,
+                                radius: null 
+                            })
+                        } else {
+                            const miles = parseFloat(val);
+                            if (!isNaN(miles)) {
+                                setFilters({
+                                    ...filters,
+                                    radius: milesToMeters(miles)
+                                })
+                            }
+                        }
                     }}
+                    placeholder="Enter distance (default: 100 miles)"
+                    placeholderTextColor="#666"
                 />
 
-                <Text style={styles.label}>Max Price Level (0-4):</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType="numeric"
-                    value={String(filters.maxprice)}
-                    onChangeText={(val) => {
-                        let mxp = parseInt(val);
-                        if (isNaN(mxp) || mxp > 4) mxp = 4;
-                        if (mxp < filters.minprice) mxp = filters.minprice;
-                        setFilters({ ...filters, maxprice: mxp });
-                    }}
+                <PriceSelector 
+                    selectedPrice={filters.selectedPrice}
+                    onPriceToggle={(prices) => 
+                        setFilters({ ...filters, selectedPrice: prices })
+                    }
                 />
 
-                <Text style={styles.label}>Cuisine (keyword):</Text>
-                <TextInput
-                    style={styles.input}
-                    value={filters.cuisine}
-                    onChangeText={(val) => setFilters({ ...filters, cuisine: val })}
+                <CuisineSelector 
+                    selectedCuisine={filters.selectedCuisine}
+                    onCuisineToggle={(cuisines) => 
+                        setFilters({ ...filters, selectedCuisine: cuisines })
+                    }
                 />
 
                 <Text style={styles.label}>Minimum Rating (0-5):</Text>
@@ -88,7 +94,10 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         marginBottom: 10,
-        padding: 5
+        padding: 5,
+        borderRadius: 10,
+        borderColor: COLORS.text,
+        color: COLORS.primary
     },
     row: {
         flexDirection:'row',
@@ -97,7 +106,8 @@ const styles = StyleSheet.create({
         justifyContent:'space-between'
     },
     label: {
-        marginBottom: 5,
-        fontWeight: 'bold'
+        marginBottom: 8,
+        fontWeight: 'bold',
+        fontSize: 16
     }
 });
