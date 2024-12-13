@@ -26,7 +26,8 @@ export default function RestaurantCard({ restaurant, onBlacklist }) {
                 rating: rating || 'N/A',
                 vicinity: vicinity || 'N/A',
                 price_level: price_level !== undefined ? price_level : 'N/A',
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                isFavorited: false
             });
             alert(`${name} has been saved to history.`);
         } catch (error) {

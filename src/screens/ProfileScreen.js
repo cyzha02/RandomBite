@@ -14,9 +14,16 @@ import { AuthContext } from '../context/AuthContext';
 import { auth } from '../api/firebase';
 import { updateProfile } from 'firebase/auth';
 import { logOut } from '../services/authService';
-import { getVisitedRestaurants, deleteVisitedRestaurant, getBlacklistedRestaurants, deleteBlacklistedRestaurant } from '../services/restaurantService';
+import { 
+    getVisitedRestaurants, 
+    deleteVisitedRestaurant, 
+    getBlacklistedRestaurants, 
+    deleteBlacklistedRestaurant, 
+    toggleFavoriteRestaurant 
+} from '../services/restaurantService';
 import { useIsFocused } from '@react-navigation/native';
 import { COLORS } from '../styles/theme';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {
     const { user } = useContext(AuthContext);
@@ -62,12 +69,36 @@ export default function ProfileScreen() {
         }
     };
 
+    const handleToggleFavorite = async (id, isFavorited) => {
+        if (!user) return; 
+        try {
+            await toggleFavoriteRestaurant(user.uid, id, isFavorited);
+            loadRestaurants();
+        } catch (error) {
+            Alert.alert('Error', 'Failed to toggle favorite status.');
+        }
+    }
+
     const renderItem = ({ item }) => (
         <View style={styles.item}>
 
 
-            <View style={styles.restaurantInfo}>
-                <Text style={styles.name}>{item.name}</Text>
+            <View>
+                <View style={styles.headerRow}>
+                    <Text style={styles.name}>{item.name}</Text>
+
+                <TouchableOpacity
+                    onPress={() => handleToggleFavorite(item.id, item.isFavorited)}
+                    style={styles.favoriteButton}
+                >
+                    <MaterialIcons
+                        name={item.isFavorited ? "star" : "star-border"}
+                        size={40} 
+                        color="#ffe234"
+                    />
+                </TouchableOpacity>
+                </View>
+
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Rating: </Text>
                     <Text style={styles.value}>{item.rating}</Text>
@@ -169,6 +200,15 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    favoriteButton: {
+        padding: 5,
+    }, 
     scrollContent: {
         padding: 20,
         paddingBottom: 40, 

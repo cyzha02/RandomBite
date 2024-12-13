@@ -1,5 +1,5 @@
 import { db } from '../api/firebase';
-import { collection, addDoc, getDocs, orderBy, query, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, orderBy, query, doc, deleteDoc } from 'firebase/firestore';
 
 export async function saveVisitedRestaurant(userId, restaurantData) {
     const colRef = collection(db, 'users', userId, 'visitedRestaurants');
@@ -25,6 +25,11 @@ export async function deleteVisitedRestaurant(userId, restaurantId) {
 export const saveBlacklistedRestaurant = async (userId, restaurantData) => {
     const colRef = collection(db, 'users', userId, 'blacklistedRestaurants');
     await addDoc(colRef, restaurantData);
+}
+
+export const toggleFavoriteRestaurant = async (userId, restaurantId, currentFavorited) => {
+    const docRef = doc(db, 'users', userId, 'visitedRestaurants', restaurantId);
+    await updateDoc(docRef, { isFavorited: !currentFavorited });
 }
 
 export const getBlacklistedRestaurants = async (userId) => {
