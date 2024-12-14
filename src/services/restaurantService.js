@@ -14,7 +14,16 @@ export async function getVisitedRestaurants(userId) {
     snapshot.forEach(docSnap => {
         visited.push({ id: docSnap.id, ...docSnap.data() });
     });
-    return visited;
+
+    // Sort the restaurants: favorite first, then by timestamp
+    return visited.sort((a, b) => {
+        if (a.isFavorited === b.isFavorited) {
+            // If both are favorite or both are not favorite, sort by timestamp
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        }
+        // If one is favorited and the other is not, put the favorite one first
+        return b.isFavorited ? 1 : -1;
+    });
 }
 
 export async function deleteVisitedRestaurant(userId, restaurantId) {
