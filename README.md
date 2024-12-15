@@ -34,7 +34,7 @@
    cd RandomBite
    ```
 
-1.5. If it is already installed
+1.5. If it is already installed:
 
 ```
 cd RandomBite
