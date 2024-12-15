@@ -34,6 +34,12 @@
    cd RandomBite
    ```
 
+1.5. If it is already installed
+
+```
+cd RandomBite
+```
+
 2. Install dependencies:
    ```
    npm install
