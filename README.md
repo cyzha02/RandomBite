@@ -30,7 +30,7 @@
 
 1. Clone the repository:
    ```
-   git clone https://github.com/Nagisaku/RandomBite.git
+   git clone https://github.com/cyzha02/RandomBite.git
    cd RandomBite
    ```
 
