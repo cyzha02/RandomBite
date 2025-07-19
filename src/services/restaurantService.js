@@ -47,6 +47,13 @@ export const getBlacklistedRestaurants = async (userId) => {
         return [];
     }
     
+    // check if blacklistedRestaurants collection exists
+    const blacklistRef = collection(db, 'users', userId, 'blacklistedRestaurants');
+    const snapshot = await getDocs(blacklistRef);
+    if (snapshot.empty) {
+        return [];
+    }
+
     try {
         const blacklistRef = collection(db, 'users', userId, 'blacklistedRestaurants');
         const q = query(blacklistRef, orderBy('timestamp', 'desc'));
