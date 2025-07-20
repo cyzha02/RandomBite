@@ -23,11 +23,11 @@ export default function Filters({ filters, setFilters }) {
     );
     const [displayRadius, setDisplayRadius] = useState(localRadius);
 
-    const screenWidth = Dimensions.get('window').width;
-    const containerPadding = 40;
+    const SCREEN_WIDTH = Dimensions.get('window').width;
+    const CONTAINER_PADDING = 40;
     const STAR_COUNT = 5;
     const STAR_SIZE = 50;
-    const TOTAL_STAR_WIDTH = Math.min(screenWidth - containerPadding, STAR_COUNT * STAR_SIZE);
+    const TOTAL_STAR_WIDTH = Math.min(SCREEN_WIDTH - CONTAINER_PADDING, STAR_COUNT * STAR_SIZE);
 
     const updateRating = useCallback((rating) => {
         setFilters(prevFilters => ({
