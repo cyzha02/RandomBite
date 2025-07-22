@@ -2,8 +2,6 @@ import axios from 'axios';
 import { PLACES_API_KEY } from '@env';
 
 const GOOGLE_PLACES_API_KEY = PLACES_API_KEY;
-// DEBUGGING
-console.log('API KEY loaded:', GOOGLE_PLACES_API_KEY ? 'Yes' : 'No');
 const BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 
 export async function getRestaurantsNearby(location, filters) {
